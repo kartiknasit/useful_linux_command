@@ -1,0 +1,191 @@
+Linux Commands to be remember
+
+Commands to be run once you installed Ubuntu
+
+add prefix sudo if need to run command as root
+
+- sudo apt upgdade
+- sudo apt full-upgrade
+
+when we start linux automatically shell process is starts
+shell is program which accepts user input and execute it
+it is a command interpreter
+shell gives command to linux kernel
+
+
+man pages --> looked to check detail or documentation of command
+
+man -> manual
+
+For ex, man ls --> will display documentation of manual of command ls
+
+we can search any string using /search_string
+then to navigate each of the matches use n for next match and N (shift + n) for previous match
+
+to go to beginning of the man page use g and to go to end press G (shift + g)
+
+to search backward use ?serach_string
+
+man page is only available for commands that have dedicated documentation or manuals in linux 
+but man page is not available for commands that are shell built in
+to check if command is built in or not
+use, type command_name
+to check help on this command use help command_name
+help is only available for commands that are shell built in
+
+we can also search for the exact or similar command using man
+use, man -k search_string --> this will display exact or possible matches of the commands that are matched to search_string
+
+ctrl + l -> clear -> clear the terminal 
+
+ctrl + d -> exit from terminal
+
+ctrl + a -> moves cursor to beginning
+
+cttl + e -> moves cursor to end
+
+ctrl + u -> clear the command line which we enter -> do not need to press backspace to all the way just press ctrl + u and it clears the current line of the command written
+useful to password also because we cant see password and if we thought to enter wrong characters we can press ctrl + u
+
+
+To check commands history -> cat .bash_history --> this file is stored in user directory
+number of commands that needs to be stored is decided by environment variable -> histfilesize -> echo $HISTFILESIZE
+Additionally, we can run history command to print history of bash commands
+the number of commands are printed using history command is controlled by HISTSIZE environment variable --> echo $HISTSIZE
+
+to run specific command from history --> !command_number_from_history
+
+to run previous command withouy using up key -> !!
+
+to check the command detail and output use -> !-number_from_the_last_command
+
+to run last command directly with its arguments -> !command_name -> this will run command previous ran with its arguments
+
+if you don't want to run the command and just print it then just use -> !ping:p or !rm:p -> it will display which last command was used for ping and rm
+
+delete specific command from history --> history -d 107 --> delete command number 107 from history
+delete entire history -> history -c
+
+to not add command into history just add whitespace before running command like, --> whitespace who -a --> this will be not saved in history
+
+if commands are still recorded in history then we can check environment variable --> HISTCONTROL
+HISTCONTROL has possible three values -> ignoredups, ignorespace, ignoreboth
+
+ignoredups -> only record history of one command if we runs the same command multiple times like, cd cd cd -> it will record only one cd in history
+ignorespace -> it will not record command written using whitespace
+ignoreboth -> it will not record commnd ran using whitespace and also record only one command if we run same command multiple times
+
+by default in ubuntu this variable is set to ignoreboth and in centos it is set to ignoredups
+
+if we change HISTCONTROL value after login it will only changed till user is logged out.
+if we want to permanently store its values even after user restarts the machine we need to save it in .bashrc file
+to do that run -> echo "HISTCONTROL=ignoreboth" >> .bashrc
+
+generally history command does not show on which time command ran
+to do that use -> HISTTIMEFORMAT="%d/%m/%y %T "
+
+
+Gain root access -> sudo su
+print your curret user access to which group -> id
+it still logged in as current user but it has now admistrator rights to execute root commands
+
+sudo su -   -> directly logged in as root --> Linux initializes all environment variable as if directly root logged in
+
+once we run any command using sudo it will first time ask for password
+but then for 5 minutes it will not ask for password and each time we run sudo command it will update time stamp and again for 5 mins not asks for password
+
+sudo -v -> automatically updates timestamp and we don't need to run the whole command to update time stamp
+sudo -k -> reset timestamp and used needs to enter password when used sudo command
+
+by default root password is not set to set the password for root -> sudo passwd root -> prompts for password of root
+once password for root is set we can just type su and it will prompt for root password and then we can logged in as root user
+
+to change password of any user run -> sudo passwd username
+
+home directory for root user is -> /root/
+and by default root directory is -> /
+so do not get confused for root user directory to root directory
+
+
+File System
+
+by default when we insert USB we need to mount it in our linux system
+in gui based linux system like ubuntu it is automatically mounted
+once inserted we can check USB by running -> df -h
+
+all the hardware related files are stored in /proc folder
+like, we can print cpu information using --> cat /proc/cpuinfo
+there are other files are also available in this directory that we can check to analyze hardware 
+/var directory used for storing system/application logs
+
+ls displays current directory contents by default
+so if we want to display current directory status and not its contet use -d option
+like, ls -ld -> this command will print detail list of /etc and not its contents
+
+file permission -> drwxrwxrwx -> indicates it is directory -> first 3 letters owner permission, group permission, other users permission
+
+use -S option to list files as size in descending order
+use -h option to see size in human readable format
+
+by default ls command does not display original size for directory
+instead we can use -> du -sh /etc/ -> to see the size of etc directory
+
+to sort using file extension use -> ls -X
+to not display specific extension file -> ls --hide=*.conf -> this will not display files that has .conf extension
+
+to check detail or location of command use type -> type ifconfig, type ls these are some examples
+
+file timestamp has 3 timestamps -> atime, mtime, ctime
+
+atime -> last time file was read -> ls -lu
+mtime -> last time of file content was modified -> ls -l, ls -lt
+ctime -> last time when metadata of file has changed -> ls -lc
+
+these times contains integer value which is calculated to time stamp from Jan 1 1970 UTC
+
+to check all the time in human readable format use -> stat filename
+
+to check full time -> ls -l --full-time filename/directory
+
+touch usually creates the file if it does not exists in current directory and also at the same time it updates the time stamp of the file
+by default if we run -> touch filename -> it updates all 3 times (atime, ctime, mtime)
+
+to specifically modify particular time use -> touch -m filename -> it update mtime and ctime
+touch -a filename -> it update atime and ctime
+
+to modify file time stamp to previous or any specific date -> touch -at 201905200223.34 filename -> it updates only atime of the file
+touch -amt 201905200223.34 filename -> it updates both atime,mtime of the file
+
+to directly change both atime and mtime use -> touch -d "2020-04-05 14:34:23" filename
+
+copy other file time stamp to other one use -> touch filename1.txt -r filename2.txt
+it will copy time stamp of the filename2.txt to filename1.txt
+
+to display files in sorted timestamp manner use -> ls -lt -> it displays file/directory sorting by modification time
+to sort file list using access time use -> ls -ltu
+to sort file using its name use -> ls -lu -> time it will shows for each file in list will be access time
+to revers the order of previous command use -> ls -lu -r
+
+to check file type use -> file filename
+to rename or move file use -> mv filename1.txt filename2.txt
+to move the file we need also give the file name with path -> mv filename1.txt Desktop/filename1.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

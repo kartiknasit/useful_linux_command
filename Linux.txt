@@ -171,16 +171,108 @@ to rename or move file use -> mv filename1.txt filename2.txt
 to move the file we need also give the file name with path -> mv filename1.txt Desktop/filename1.txt
 
 
+to view content of the file use -> less filename -> use ctrl + f or space to move forward one page
+to move previous one page -> ctrl + b
+if we want to see live updating of file content -> less +F filename
+to see line number of file -> less -N filename
 
+using tail we cann see last 10 lines of any file by default -> tail filename
+to see specific last line -> tail n -2 filename -> it will shows last 2 lines of the file
+tail -n +20 filename -> it will display file content starting from line no 20 to the end
+to see live updating of file -> tail -f filename
 
+to see starting of the file -> head filename
+to see specific content of file from beginning -> head -5 filename -> display first 5 lines of filename
 
+to see live command execution use watch -> watch ls -> it periodically execute ls command and updates the output
+to check updates highlighted -> watch -n 1 -d ls -l
+another example -> watch -n 1 -d ifconfig
+another example -> watch -n 1 -d free -m -> using this command we can see output live updates of free memory
 
+to display message while using mkdir command -> mkdir -v directorname
+to create nested directories with parent directories that are not exists -> mkdir -p first/second/third
+it will create all three directories first, second and third
 
+to copy content of files or directories use cp command
+cp file1 file2 -> if file2 does not exists it will create and copy content from file1 to file2 and if exists it ovewrites the contents of file2 with file1 content
+generally cp command does not prompt for overwrite and directly overwrite destination file
+to prompt use -> cp -i file1 file2
+to verbose information -> cp -v file1 file2
+to copy files to directory -> cp file1 directorname
+copy directories recursively to another directory -> cp -r /etc/ ~/Desktop
+when we copy file content to other file content the owner of the file will be the one who ran the command
+Like, file1 owner is A and we use -> sudo cp file1 file2 --> then root becomes owner of the file2
+to preserve the ownership of the file use -> cp -p file1 file2
+to recursively copy directories use -> cp -r dir1 dir2
 
+to move files from one directory to another use -> mv source destination
+to rename file -> mv file file -> this usually rename when both files remains in same directory
+to prompt when file exists and you don't want to overwrite it then -> mv -i
+to move latest file -> mv -u -> if source file is latest one then it will not move otherwise if destination is the latest one then it will move
+same way if we want to rename the directory then use -> mv dir1 dir2
+to rename file when moving even if they are not in same directory use -> mv dir1/file1 dir2/file2
+it will move file1 and rename to file2 in dir2
 
+to remove file -> rm file1
+to prompt use -> rm -i file1
+to remove directory -> rm -r dir
+if files are write protected and you don't want prompt then use -> rm -f file1
+before removing files using pattern matching like, *.txt check which are files will be deleted using rm -rf *.txt
+to see which files will be deleted use -> echo *.txt
 
+there are possibilities that files removed using rm command can be recovered
+to not allow recovering of deleted files use -> shred -vu -n 100 file -> it will ovewrites 100 times file with random content and then removes it
+so that recovery tools are not able to recover exact file with same content
 
+pipe (|) allows to give 1st Command output to second command input
+like, ls -lSh /etc | head -> it will display first 10 files -> head used the output of the ls command as input and displayed first 10 lines of its output
+another example -> ls -lSh /etc | head -n 20 | tail -n 1 -> it will display file number 20 from ls command
 
+in linux everything is treated as file even terminal
+like, in current terminal when we write -> tty -> it will shows from which file current terminal resides
+if we want to see output in the terminal then when we write something to that terminal file it will automatically update that terminal
+like, tty -> /dev/pts/0 -> this is current terminal file
+now open another terminal and execute -> ifconfig > /dev/pts/0
+you can see that output of the 1st terminal automatically updated to ifconfig command
+
+generally if command successfully output only then we can use redirection operator to write into the file
+like, ls -l > filelist.txt or ls -l >> filelist.txt (>> will append file content and > overwrites file content)
+but when the command produces error we can't simply use > and >> to write to the file
+instead we can use 2> and 2>>
+like, tail -n 10 /etc/passwd /etc/shadow > output.txt 2> error.txt
+from the above command tail will display last 10 lines for /etc/passwd but /etc/shadow is protected so it will give error
+so here /etc/passwd output will be overwritten to output.txt and error from /etc/shadow will be over to the error.txt file
+
+to write both output and error into the same file -> tail -n 20 /etc/passwd /etc/shadow > output.txt 2>&1
+
+if we want to see the output in addition to writing the output into the file 
+use -> tee
+like, ifconfig -> grep ether -> tee m.txt -> it will display mac address from ifconfig output which is found by grep command and then it also write that output into the m.txt
+to append the output of file when using tee use -> tee -a file.txt
+
+to search files use -> find and locate -> by default locate is not installed in ubuntu
+to install locate in ubuntu use -> sudo apt install mlocate -> in newly version mlocate is locate
+by default locate uses database stored at -> /var/lib/mlocate/mlocate.db
+to check how many files, directories are indexed in database check -> locate -S
+
+locate one -> this will search directories name as well as file names and displays with its absolute path
+to only search for file name use locate -b string -> this will now not search for the string absolute path instead it will only search for file name
+to search for exact file name use -> locate -b '\filename' it will search for filename as exact name to find file
+everytime we use locate command there may be possibility that new files added or old files renamed
+so use --> sudo updatedb
+
+to look for the command path from where it installed use which 
+like, which rm -> returns /usr/bin/rm
+to list all the executables of command use -> which -a rm
+
+find is also used for searching for the file but it has more option than locate
+to find file in current directory -> find . -name filename
+to search case insensitive -> find . -iname filename
+find and delete at the same time -> find . -name todo.txt -delete
+to also execute ls command on each file when finding use -> find . -name todo* -ls
+to seach for directory -> find dirtosearch -type d
+it will search recursively all the subdirectories to its total depth
+to search for specific level use -> find dirtosearch -maxdepth 1 -type d -> it will display only subdirectories of dirtosearch because we specified only level 1 as maxdepth
 
 
 

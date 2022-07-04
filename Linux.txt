@@ -314,6 +314,19 @@ when we delete a file hard link will be remain for other files but symlink will 
 
 
 
+User Accoung Management
+
+there are 2 main files for users in Linux
+1 -> /etc/passwd -> contains basic informations of the user accounts of the system
+2 -> /etc/shadow -> contains password for each user in hash/encrypted password
+
+user generally has one primary group and can be in multiple secondary groups
+to check that we can see /etc/passwd
+also, /etc/group and search for user to which secondary group user is belong to
+to print all the detail of user like userid, groupid and secondary group details use -> id
+to print groups of user use -> groups username
+groups -> this will display current user groups
+
 
 
 

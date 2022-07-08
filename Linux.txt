@@ -273,10 +273,40 @@ to also execute ls command on each file when finding use -> find . -name todo* -
 to seach for directory -> find dirtosearch -type d
 it will search recursively all the subdirectories to its total depth
 to search for specific level use -> find dirtosearch -maxdepth 1 -type d -> it will display only subdirectories of dirtosearch because we specified only level 1 as maxdepth
+to search files with size -> find /var -type f -size 100k -ls -> it will display files which has size around 100000 bytes
+to search files greater than specific size -> find /var -type f -size +10M -ls 
+to search files less than specific size -> find /var -type f -size -1k -ls
+to search files in between size -> find /var -type f -size +5k -size -10k -ls
+to search files as per time stamp use -> find /var -type f -atime 0 -ls -> it will display files that are accessed in 24 hours
+we can use -atime, -mtime and -ctime option for respective time stamp
+to search files that are accessed at least 2 days ago use -> find /var -type f -atime +1 -ls
+to search files as per minutes -> find /var -type f -mmin -60 -> files that are modified in last hour
+to search files per owner -> find /var -type f -user username -ls -> display files that are owned by username
+to search files that are not belong to root group -> find /var -type f -not -group root -ls
+
+to run command on each file returned by find command we can use exec option
+like, find /var -type f -mtime 0 -exec cat {} \;
+this will print each file content using cat command we have given in exec option
+we can also use find and exec to backup the files that are modified in last 7 days
+like, find /etc -type f -mtime -7 -exec cp -v {} ~/backup \;
+
+
+to search for string in files use -> grep searchstring file
+to search for string case insensitive -> grep -i searchstring file
+to search for string with its line number in file -> grep -i -n searchstring file
+to search for exact word in file use -> grep -w searchstring file -> it will display the lines of file that has exact same match as searchstring
+to search for lines that don't contains the searchstring use -> grep -v searchstring file
+to search for string in binary files use -> grep -a searchstring file
+to search for string in files in the given directory use -> grep -R searchstring dir
+to not display not existing or not readable files error while usign grep use -> grep -s searchstring /etc
+to print the count of matches use -> grep -c searchstring file
+to print the lines before and after the searchstring use -> grep -A 3 -B 4 searchstring file 
+	-> it will display lines that are 4 lines before the matched line and 3 lines after 3 matchline
+alternatively we can use -> grep -C 3 searchstring file -> that will print lines that are before and after current matched line
+to exclude empty lines use -> grep -v "^$" -> ^ is the starting of the line and $ is the end of the line
 
 to compare files use -> cmp file1 file2 -> it compare files byte and byte and displays first non compare line numbers
 it also used to compare binary files
-
 another way to compare binary files -> sha256sum file1 file2 -> it displays sha for the both files -> by checking those we can say that they are identical or not 
 
 to display content of files that has difference use -> diff file1 file2
@@ -312,8 +342,6 @@ to find the number of hard links of files in the directory use -> find /usr -typ
 to create symlink use -> ln -s file1 file2
 when we delete a file hard link will be remain for other files but symlink will be destroyed
 
-
-
 User Accoung Management
 
 there are 2 main files for users in Linux
@@ -327,6 +355,72 @@ to print all the detail of user like userid, groupid and secondary group details
 to print groups of user use -> groups username
 groups -> this will display current user groups
 
+to create new user -> sudo useradd u1
+to check newly created user list use -> tail -n 5 /etc/passwd
+by default when user is created linux system automatically create and assign group to user which has same name as user
+useradd command generally differs in linux distributions
+by default -> sudo useradd u1 -> will not create user home directory for u1
+there are so many manual options for useradd command
+to create user home directory when executing useradd command use -m option
+to create custom user home directory when executing useradd command use -d option like, -> useradd -d /home/james username
+to add comment for user when executing useradd command use -c option like, -> useradd -c "Test User" u1
+to add specific shell to user when it opens terminal or login use -s option like, -> useradd -s /bin/bash u1
+to assign different primary group to user when creating use -> useradd -g groupname username
+for secondary groups use -> useradd -G g1,g2,g3 username
+to add expiration date for user use -> useradd -e 2020-12-12 username
+to check password expiration policy and other details for expiration use -> sudo chage -l username
+
+once user is created and then if we want to change user properties use -> usermod
+usermod -g G1 username -> change primary group of username to G1
+usermod -G G1,G2 username -> chang secondary groups of username to G1, G2
+usermod -c "Developer" username -> to add comment for the username
+to delete user use -> userdel username
+by default userdel also deletes the group which has the same name as username along with user
+if this group is associated to some other user then group will not be deleted
+by default userdel command does not delete users home directory
+to delete user home directory when executing userdel use -> userdel -r username
+to allow user to run administrative commands we need to assign the user to sudo group
+usermod -g sudo username -> assign username to sudo group
+
+to create group -> groupadd groupname 
+to rename the group -> sudo groupmod -n g1 g2
+
+w -> displays logged in users in the current system and the process they are running
+last -> displays list of last logged in users
+uptime -> each time users logged in users it will display total number of logged in users
+to find activity of particular user -> last username
+
+File Permissions
+
+each file or directory has owner and group
+by default user who creates the file or directory will become the owner of the file and group assigned to the file is the one user has as primary group
+ownership of the file or directory can be changed by root using chown and chgrp
+
+there are 3 permissions -> r(read), w(write), x(execute)
+to view file the permission -> ls -l or stat
+permissions is divided in 3 parts -> owner(rwx), group(rwx), everybody else(rwx) like, -rw-r--r--
+first one indicates the type of file or directory and other 9 are divided in each 3 permission as mentioned above
+
+file permission concept does not applicable for root even though there are no permissions given to file root can still read,write and execute the file
+like, file1 has ---------- permissions that means no users can read,write and execute except root
+
+linux file permissions can be also applied or viewed as octal notations
+to view the file permissions in symbolic and octal format use -> stat /etc/shadow
+each permission has octal notation like, r-4, w-2, x-1, -(no permission)-0
+
+chmod u-w file -> removes write permissions for user from file
+chmod u+rwx file -> add read,write and execute permission for user for file
+chmod u-x,g+w,o-rwx -> remove execute permission for user, add write permission for group and removes all permission for other users for specified file
+to display detail when chmod execute use -v option
+chmod ug-r,u+w,g+x,o-rwx -> removes read permission for user and group, add write permission for user and execute permission for group 
+							and removes read,write and execute permissions for other users
+
+chmod a+r,a-wx file -> add read permission and removes write and execute permission for user,group,others from file
+chmod ug=rw,o= file-> set read,write permission for owner and group and no permission for others -> note that there white space after o=
+chmod 644 file -> read,write for owner, read for group and others
+to view list of files recursively from directory use -> ls -lR dir
+to give permission recursively to directory and files within subdirectories as well use -> chmod -R 744 dir
+to give permission to file from another file use -> chmod --reference=file1 file2
 
 to change only files permissions from within directory use -> find dir -type f -exec chmod 644 {} \;
 for directory just use -> find dir type -d -exec chmod 644 {} \;

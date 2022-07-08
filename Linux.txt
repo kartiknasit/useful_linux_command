@@ -328,9 +328,12 @@ to print groups of user use -> groups username
 groups -> this will display current user groups
 
 
+to change only files permissions from within directory use -> find dir -type f -exec chmod 644 {} \;
+for directory just use -> find dir type -d -exec chmod 644 {} \;
 
-
-
+change file owner
+chown username filename -> need to run using root
+we can specifiy multiple files or directories in chown
 
 
 

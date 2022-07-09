@@ -429,8 +429,49 @@ change file owner
 chown username filename -> need to run using root
 we can specifiy multiple files or directories in chown
 
+there is also Sticky Bit permission 
+it is mostly applied on directory
+when set user can only able to delete the files they owned or they have explicit write permissions for those
+to add sticky bit in directory use -> chmod 1777 dir or chomod o+t dir
+after set sticky bit other users are not allowed to remove the file even dir has execute permission for other 
+other users can still read or write files or move but they cannot delete
+
+by default linux uses default permissions for files and directory
+we can change that using -> umask
+default permissions for file -> 0666 and for dir -> 0777
+so lets suppose if umask is 0002 then default permissions for files and dir is when created -> 0664 and 0775
+umask value is only affected for the current shell session for current user
+to change umask -> umask value like -> umask 0022
+to set desired value to umask permanently change .bash_rc which is in home directory 
+and append umask value at the bottom of the file
+
+in addition to the file permissions there file attributes which are not displayed by ls
+to check use -> lsattr dir
+to change the attributes of file use -> sudo chattr +a file -> file now will be opened only in append mode noone able to delete the content or modified other append content.
+use -> man chattr -> to check details of option that are available for file attributes
 
 
+Linux Process Management
+
+every executable command creates a new process
+if its shell builtin no process is created
+to check if command is executable file or shell builtin use -> type ls or type cd or type umask etc....
+to see processes like task manager use -> top
+
+ps -e -> displays all the processes that are running
+ps -ef -> displays all the processes that are running with detailed information
+when listing processes if in TTY column we see ? then it has no shell attached to it and it is System process or service
+the names of system services or daemon process generally ends with d
+like, systemd, sshd, httpd
+another common process command to list processes -> ps -aux or ps aux -> it displays CPU and Memory usage also
+to check processes for particular user use -> ps -ef -u username
+there is also another command to search processes by name -> pgrep processname
+or we can use pipe command like, ps -ef | grep sshd
+it also displays grep sshd as it will also create process with name -> grep sshd
+
+to stop proceses we can use kill commands
+to see the signals that kill sends use -> kill -l
+kill -SIGINT $(pidof firefox) -> this command will kills all the processes that firefox is running on
 
 
 

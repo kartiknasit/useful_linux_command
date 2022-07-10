@@ -468,10 +468,137 @@ to check processes for particular user use -> ps -ef -u username
 there is also another command to search processes by name -> pgrep processname
 or we can use pipe command like, ps -ef | grep sshd
 it also displays grep sshd as it will also create process with name -> grep sshd
+to sort processes as per memory usage and store them in file use -> ps aux --sort=-%mem > processes.txt
 
 to stop proceses we can use kill commands
 to see the signals that kill sends use -> kill -l
 kill -SIGINT $(pidof firefox) -> this command will kills all the processes that firefox is running on
+we can send signal to process which causes it to reload its configurations if we have changed 
+because processes generally loads its configurations at startup and to again load changed configurations we need to stop and restart the server
+one better way is to send it the reload signal like -> sudo kill -1 sshd (-1 is for signal number which is SIGHUP)
+to kill all the processes with the same name use -> killall -15 processname
+to kill all the processes with the partial name use -> pkill processpartialname
+
+by default every process started from terminal will be starts in foreground and we might have wait until is completes
+to start process in background use & at the end of the command like, -> sleep 222&
+even though process started in background its output will be displayed in the same terminal
+so we need to redirect output of the background process in file to view later because once the background process completes it will display output in same terminal
+to make sure we get output and if error in different files when we start background process 
+use -> ping -5 google.com > output.txt 2> errors.text &
+if we want to use same file then use -> ping -5 google.com > output.txt 2>&1 &
+and if we don't care about the process output then just use -> ping -5 google.com > /dev/null 2>&1 &
+/dev/null is file managed by linux which will discard everything once command is done
+
+we can print background processes using -> jobs
+it will display list of background proceses
+we can then move that background processes into foreground processes if we want like -> fg %jobid
+job id will available when we use jobs command
+to put the job in background use -> bg %jobid
+if process is started in foreground and we want exit from the terminal use -> ctrl + c
+it will suspend the process and will not remove from processor or from memory
+we can see that process in process list -> ps -ef or pgrep -l processname
+we can resume that process using -> bg %jobid or fg %jobid
+
+when we start process from terminal whether in foreground or in background it will be closed when we close terminal
+we might want to keep certain processes running like backup scripts or any shell script that will executed from terminal and we want to close the terminal
+for this use -> nohup sleep 123 &
+nohup will keep process running and it will also stores it output in nohup.out file even though terminal is closed
+nohup.out will be created in user home directory
+
+Networking in Linux
+There are 2 main conmmands to check network interfaces in linux -> ifconfig and ip a
+to display all network interfaces and its ips use -> ifconfig -a or ip address show
+ifconfig -a -> display all the enabled and disabled network interfaces whereas
+ifconfig -> only displays enabled network interfaces
+in command -> ip address show -> address is object and show is the command
+so for object we can use short form like, ip a show which is similar to ip address show
+and show is the default command for ip a so we can ignore it and just run -> ip a
+to list only ipv4 -> ip -4 a
+to list only ipv6 -> ip -6 a
+ifconfig does not displays gateway
+to display that use -> route -n
+to display dns information -> systemd-resolve --status
+
+to disable the network interface use -> ifconfig interfacename down
+to enable it -> ipconfig interfacename up
+to disable using ip -> ip link set interfacename down
+to check status of the interface -> ip link show dev interfacename
+to enable it -> ip link set interfacename up
+
+for static configurations of network in ubuntu we need to netplans
+when we set static ip for network interface it will not remain changed once we restart the system
+to set static ip for particular network interface -> ipconfig interfacename 192.168.0.1/24(network mask) up(this is optional which also starts the network interface or restarts)
+
+we can also set static ip using ip comand -> first we need to delete the existing ip from interface
+-> ip a del 192.168.0.111/24 dev interfacename
+now we have add the needed ip address use -> ip a add 192.168.0.112/24 dev interfacename
+
+we can also change default gateway
+-> route del default gw ipofgateway
+now to add -> rote add default gw newipofgateway
+we also change using ip command
+first display gateway information -> ip route show
+now delete the gateway -> ip route del default
+now add gateway -> route add default via 192.168.0.1
+we change the mac address 
+first disable the interface -> ifconfig interfacename down
+now use -> ifconfig interfacename hw ether macaddresstobechanged
+now enable the interface -> ifconfig interfacename up
+
+to set static ip first we need to stop the network manager service
+-> sudo su -> systemctl stop NetworkManager -> systemctl disable NetworkManager (This is required because when system restarts it will not start NetworkManager automatically)
+to check if NetworkManager will start automatically when system starts use -> systemctl is-enabled NetworkManager 
+create yaml file in /etc/netplan
+use sample below 
+network:
+	version: 2
+	renderer: networkd
+	ethernets:
+		enps03:
+			dhcp4: false
+			addresses:
+				- 192.168.0.111/24
+			gateway4: "192.168.0.1"
+			nameservers:
+				addresses:
+					- "8.8.8.8"
+					- "8.8.4.4"
+
+to apply the changes in network run as root -> netplan apply
+
+by default ping waits 1 second before sending next packet
+to change that use -> ping -i 0.2 -c 5 google.com (-c 5 means ping will sends 5 packets and exits)
+to get the routers list which will be called first and then second and then third and so on use -t option
+like, -> ping -t 1 -c 5 -n google.com (-n option is used to not lookup for reverse dns names)
+above command will display first router
+ping -t 2 -c 5 -n google.com -> this will display second router to which our ping request received
+
+to troubleshoot network connection first we need to start with pinging default gateway
+find default gateway using -> route -n
+now ping the ip of the default gateway	
+
+to install open ssh server and client use -> sudo apt update && sudo apt install openssh-server openssh-client
+to check if ssh service is enabled on the startup use -> systemctl is-enabled ssh
+to check if the port is open in server use -> telnet serverip port
+to check if the port is open in server using nmap use -> nmap -p port serverip 
+to check firewalls settings use -> sudo iptables -vnL
+to enable firewall -> sudo ufw enable
+to disable -> sudo ufw disable
+to check status of firewall -> sudo ufw status verbose
+to check allowed applications in firewall use -> sudo ufw app list
+to allow application in firewall use -> sudo ufw allow ssh
+to list log information when using ssh to connect to server use -> ssh -v username@serverip
+to see logs in server if ssh connection is not working check in -> sudo tail -f /var/log/auth.log
+server configuration file for ssh is located in -> ls -l /etc/ssh -> sshd_config
+there is also ssh_config file which is for ssh client
+to see all available option use -> man sshd_config
+for security reasons we can change the default ssh port but not don't forget to allow it in the firewall
+another security measurement for ssh_config file is to not allow direct root login into server using ssh
+for that we need to change sshd_config and modify the -> PermitRootLogin no
+to allow specific users to login using ssh add -> AllowUsers u1 u2 u3 -> in sshd_config
+to add specific ip addresses that only can access ssh use -> iptables -A INPUT -p tcp --dport sshport -s ipaddress -j ACCEPT
+
+
 
 
 

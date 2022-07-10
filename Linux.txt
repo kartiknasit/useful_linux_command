@@ -427,7 +427,35 @@ for directory just use -> find dir type -d -exec chmod 644 {} \;
 
 change file owner
 chown username filename -> need to run using root
+chgrp -> can be run by user if he is owner or if he belons to the group file has assigned
 we can specifiy multiple files or directories in chown
+we can assign owner and group at the same time in chown like, sudo chown user:group file
+to change group -> sudo chgrp sudo(groupname) file
+to change owner/group for all files and directories -> sudo chown -R user:group dir
+there are 3 other permissions other than read/write/execute for file/directory
+SUID or Set User ID, SGID or Set Group ID and Sticky Bit
+These permissions are not for user specific whether they belongs to File/Directory
+For Ex for SUID, cat command does not run on /etc/shadow as this file is root protected without giving sudo
+now when we set SUID for cat executable we can run this command
+to set SUID -> sudo chown 4755 /usr/bin/cat -> 4 is the number for SUID and other permissions are as it is for cat
+we can check after executing above command -> ls -l /usr/bin/cat
+so after SUID set on cat we can run -> cat /etc/shadow and see the file content
+to find files that has SUID set -> find /usr/bin -perm -4000
+-> this will display all the files that has SUID set which means they can be run without sudo
+-4000 means on the above command is that find the files that has atleast 4000 permission
+note that first digit 4 in above is SUID and other 3 digits are regular file permissions
+
+SGID -> similar to SUID 
+it is mostly set on directories
+when multiple users from the same group wants to use directory then we can set SGID on that directory
+to set SGID -> sudo chown g+s or 2770 dir
+because if user creates directory its group belongs to the user resides and other users from other group can't acccess that file
+like, mkdir dir -> dir has user as its owner and its group is by default user (becauase linux creates default group of the name as username when we 
+create user)
+so to access that directory created by above we need to either add group to that dir or simply sets SGID
+so when other users from same group create file or directory in the above directory
+its group not sets as default group same as user but instead its group sets to primary group parent directory has
+
 
 there is also Sticky Bit permission 
 it is mostly applied on directory
@@ -597,9 +625,38 @@ another security measurement for ssh_config file is to not allow direct root log
 for that we need to change sshd_config and modify the -> PermitRootLogin no
 to allow specific users to login using ssh add -> AllowUsers u1 u2 u3 -> in sshd_config
 to add specific ip addresses that only can access ssh use -> iptables -A INPUT -p tcp --dport sshport -s ipaddress -j ACCEPT
+to copy files between 2 hosts when connected using ssh use -> scp
+command for this is -> scp -P sshport filetobecopied username@serverip:directoryinwhichfiletobecopied
+to copy file with different name use -> scp -P sshport filetobecopied username@serverip:directoryinwhichfiletobecopied/newfilename
+to copy directory -> scp -r -P sshport dirtobecopied username@serverip:sourcedir
+adding -p option will preserve modification and access time
+user who is copying must have write permission on source directory 
+scp will overwrite without confirmation whem copied
+to copy from source to destination -> scp username@serverip/sourcefilewithlocation destinationdir(/home/user)
+to copy directory just use -r option
 
+one of the command that also copy files and directories in linux machine is -> rsync
+it maintains sym links, permissions, owners of the copied file/directory 
+we can use rsync as backup command to copy or backup files
+use -> sudo rsync -av /etc ~/etc-backup
+-a option tells rsync to copy all the files recursively and v option is for verbose mode
+rsync does not copy if file/directories not changed thats why it is useful
+to not see log while running rsync use -q instead of -v
+to make sure when file from source directory is removed and also will be removed from destinatin directory when we run rsync 
+use -> rsync -av --delete source destination
+this will greatly help to make sure that both source and destination directories contains same files or subdirectories
+wget to copy files from network
+to save it to specific use -> wget -P dir url
+to limit download bandwidth when using wget use -> wget --limit-rate=100k -P dir url
+to make sure that next time download resumes if interrupted previously use -c option
+to download multiple files save each url in each line and save it in file and then run -> wget -i file
+use -b option with wget to run download in background
+to download full website use -> wget --mirror --convert-links --adjust-extension --page-requisites -- no-parent website
+or use shortcut -> wget -mkEpnp website
 
-
+to check all the services or processes that are listening to specific ports use -> sudo netstat -tupan
+to display proper list of processes that are using TCP port and are listening -> sudo lsof -iTCP -sTCP:LISTEN -nP
+additionally to only list specific port listened services -> sudo lsof -iTCP:22 -sTCP:LISTEN -nP
 
 
 

@@ -659,4 +659,12 @@ to display proper list of processes that are using TCP port and are listening ->
 additionally to only list specific port listened services -> sudo lsof -iTCP:22 -sTCP:LISTEN -nP
 
 
-
+System Administration in Linux
+Managing Automatic Jobs (cron jobs)
+There are 2 types of cron jobs -> System Specific and User Specific
+Cron Jobs are generally located under -> /var/spool/cron/
+To display the content of the crontab file or cron jobs for the current user use -> crontab -l
+To edit the user specific cron jobs -> crontab -e
+General notation for cron job is -> min hr day month dayofweek command
+So 0 4,6,8 * * * /root/backup.sh -> will run back script on every day at 4,6,8 AM.
+If you want to run script on PM use 16,18,20

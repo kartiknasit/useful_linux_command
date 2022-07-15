@@ -668,3 +668,57 @@ To edit the user specific cron jobs -> crontab -e
 General notation for cron job is -> min hr day month dayofweek command
 So 0 4,6,8 * * * /root/backup.sh -> will run back script on every day at 4,6,8 AM.
 If you want to run script on PM use 16,18,20
+There are also shortcuts for the cron expression
+like -> @yearly /etc/var/backup.sh -> will run on 1st Jan every year at 12 AM
+same way @monthly, @weekly, @daily, @hourly, @reboot
+For ex: if we want to append date in file at every 2 minute we can use -> */2 * * * * date >> /tmp/date_time.txt 
+We can change default editor of crontab -e use -> select-editor
+After applying cron expression to crontab -e we can see update/execution of command using -> tail -f /var/log/syslog
+to remove the user cron job -> crontab -r
+root can remove the cron jobs of any user -> crontab -e -u username -> it will open cronjob file of the specified user
+root can also remove the all cron jobs without opening the cron job file which opens using -> crontab -e -u username
+it just needs to run the command -> crontab -r -u username
+root can restrict which cron job user allowed or denined -> use -> man crontab -> to check more detail
+without editing crontab if we want our script to be run as weekly,daily,hourly
+we can put our script in -> ls /etc/cron.daily, /etc/cron.hourly /etc/cron.monthly
+
+anacron is generally used for the system that are no up all the time
+the file that specifies anacron jobs is -> cat /etc/anacrontab
+anacron runs jobs daily not hourly,per minutes
+anacron can only be edited using root so use -> sudo vim /etc/anacrontab
+to verify syntax in anacron file use -> anacron -T
+to start running -> anacron -d
+
+to access the files that are in other partition we need to first mount called mount point
+to display all attached file system use -> mount 
+to print specific type of mount points use -> mount -l -t ext4
+to find the name of device inserted use -> sudo fdisk -l
+dmesg -> displays last activity of inserted or removed external device -> we can also use this command to find the name of newly inserted device
+lsblk -> display list of devices/partitions that are mounted
+to start using external device we need to first mount it
+use -> sudo mount externaldevicelocaiton(/dev/sdb) customdir(/home/kartik/Downloads/usb)
+we can mount same physical device on multiple directories
+to check mount points of external devices use -> mount -t vfat -l
+to unmount -> sudo umount mountpoint(/home/kartik/Downloads/usb)
+we can also mount partition or external device as read only like -> sudo mount -o ro /dev/sdb /home/kartik/Downloads/usb
+if we by mistake mounted external device as read only and if we want to remount without using umount
+use -> sudo mount -o rw,remount /dev/sdb /home/kartik/Downloads/usb
+we can also mount iso file like -> sudo mount /path_to_iso_file /home/kartik/Downloads/iso -o loop
+
+dd command generally used to cloned the device
+like -> dd if=/dev/sdb of=/home/kartik/Downloads/usb.img status=progress
+to restore the image file created above use -> dd if=/home/kartik/Downloads/usb.img of=/dev/sdb status=progress
+to copy root partition to usb drive -> dd if=/dev/sda5 of=/dev/sdb status=progress (find root partition by df -h)
+
+systemd is Linux default start initialization process management tools
+systemd starts with PID 1 and it mounts the host file system and starts the services
+name of process name of PID 1 might be different to maintain backward compatibility
+to check how long it took for the boot process -> systemd-analyze
+to control the service manager use -> systemctl
+to enable the service on startup -> systemctl enable servicename
+to prevent service from starting use -> systemctl mask servicename
+and to again allow to start the service use -> systemctl unmask servicename
+systemctl list-units -> display list of services that are enabled/disabled
+
+
+

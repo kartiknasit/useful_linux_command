@@ -720,5 +720,22 @@ to prevent service from starting use -> systemctl mask servicename
 and to again allow to start the service use -> systemctl unmask servicename
 systemctl list-units -> display list of services that are enabled/disabled
 
+Bash Programming
+To Check display aliases use -> alias
+To create alias -> alias c="clear"
+When we create alias it will be only available in the terminal in which we created
+to make it permanent need to change -> ~/.bashrc or ~/.bash_profile
+add alias c="clear" in the last line to make it permanent
+so when we add alias in ~/.bashrc file it will be not available in the current terminal in which we added alias in the file
+because .bashrc file reload again only when we open new terminal
+so we need to close and start the terminal again or check in the new terminal 
+to make it available in current terminal instantly use -> source .bashrc
+to remove the alias use -> unalias c
+alias will be very useful when we connects frequently to a specific machine 
+we can create alias for that command like -> alias server1="ssh -p sshport username@serverip"
+we can create alias for the command that displays the open ports
+
+to check which shell has started when we opened the terminal or system started use -> echo $0
+
 
 

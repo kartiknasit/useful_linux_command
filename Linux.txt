@@ -658,6 +658,44 @@ to check all the services or processes that are listening to specific ports use 
 to display proper list of processes that are using TCP port and are listening -> sudo lsof -iTCP -sTCP:LISTEN -nP
 additionally to only list specific port listened services -> sudo lsof -iTCP:22 -sTCP:LISTEN -nP
 
+Software Management in Linux
+
+dpkg provides low level infrastructure for package management
+to show infor of .deb file use -> dpkg --info file.deb
+to install .deb file -> dpkg -i file.deb
+to get list of installed packages use -> dpkg --get-selections
+dpkg-query -l -> displays list of packages with version info
+and we can find specific package using grep like, dpkg-query -l | grep chrome
+to list out files created or used by install package use -> dpkg -L | packagefullname
+to find the package installed for each command 
+first find the location of the command using -> which commandname(like ls) -> use location of the command and get package name -> dpkg -S commandlocation
+now we can check for this command which files are installed -> dpkg -L packagename
+to remove/uninstall the package use -> sudo dpkg -r packagename
+to remove the configuration files used for the package we need to use -> dpkg -P packagename 
+
+we can also use apt to install packages like -> apt install nginx or if already downloaded file -> apt install ~/Downloads/google-chrome.deb
+to check list of packages that are upgradable use -> apt list --upgradable
+to remove the package with configuration files use -> apt purge packagename 
+to remove unneeded dependancy -> sudo apt autoremove
+to check size of particular directory -> du -sh dir
+to clean the cache -> sudo apt clean -> we can generally find the cache/archive files in /var/cache/apt/achives/
+apt list -> displays list of packages that are available in ubuntu repositories
+to get list of installed packages -> apt list --installed
+to display the detail of package -> apt show packagename 
+we can synaptic to see list of packages, upgrade them or remove from UI provided by synaptic -> sudo apt install synaptic -> to run -> sudo synaptic
+
+
+lshw -> displays hardware information of the machine
+to save hardware information as html -> lshw -html > hardware_info.html -> it will created hardware_info.html file in current directory
+to display short information of hardware -> lshw -short
+we can also use -> inxi -Fx
+lscpu -> to get information on CPU
+to get memory information of slots and other info -> sudo dmidecode -t memory | grep -i size
+to list SATA Controller, PCI Bus use -> lspci
+to list USB ports and information -> lsusb
+lsblk -> display all block devices including Hard Disk or lshw -C disk -short
+acpi -bi -> to check laptop battery info
+cat /proc/meminfo, cat /proc/cpuinfo, cat /proc/partitions
 
 System Administration in Linux
 Managing Automatic Jobs (cron jobs)

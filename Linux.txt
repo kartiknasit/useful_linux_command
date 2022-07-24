@@ -774,6 +774,69 @@ we can create alias for that command like -> alias server1="ssh -p sshport usern
 we can create alias for the command that displays the open ports
 
 to check which shell has started when we opened the terminal or system started use -> echo $0
+to display list of shells -> cat /etc/shells
+to display default shell of each user -> cat /etc/passwd
+normally when you create shell script file you need to give executable permission to that file
+to give executable permission to the shell script file use -> chmod 700 first_script.sh
+when we use -> ./first_script.sh
+terminal will look for the directory found using -> echo $PATH for executable scripts to be run
+thats why we need to give ./ or absolute path
+if we don't add our bash shell which will run the script in the first line of our .sh file
+it will run using default shell
+like, in our first_script.sh file we can give #!/bin/bash in the first line
+if we are running other scripts like python, go we need to add shebang in the first line in the script
+So that script can be run using that shell
+shebang starts with #! and the path of the shell
+to set permanent line number to be displayed in vim editor 
+set -> set nu in ~/.vimrc
+another way to run the script -> bash first_script.sh
+for the above case it is not mandatory for the script file to have execution permission
 
+to display all the environment variable use -> env 
+to make it more readable use -> env | less
+printenv HOME -> prints the value of HOME environment variable
+we can also specify multiple environment variable to the printenv
+set -> displays environment variables as well as shell functions
+to displays only environment variables use -> set -o posix
+to reload the bashrc file -> source ~/.bashrc
+We can add our scripts directory so that our scripts can be executed even we not in the directory
+For that we need to add line -> export PATH=$PATH:/home/kartik/scripts in ~/.bashrc file
+
+to take input from user in terminal use -> read name -> where name is variable in which value which user passed will be stored
+to prompt the user to when entering value from terminal use -> read -p "Enter Value" value -> value will be the one which takes the user input
+to drop packets for specific ip use -> sudo iptables -I INPUT -s 8.8.8.8 -j DROP
+-> after executing this command when we ping 8.8.8.8 it will not works 
+while reding input if we don't want to display the text user entering like used for password use -> read -s -p "Enter Password: " passwd
+$0, $1 and so on are the arguments we can get in script when we run the shell script
+$0 -> name of the script
+$1 -> first agrument which is given after the script name and space
+$2 -> second argument which is given after the first argument and space
+and so on....
+$# -> number of the positional arguments
+"$*" -> represnts all the arguments given after the script name
+$? -> most foreground command exit status
+
+if condition
+then
+	// execute this code
+elif othercondition
+then
+	// execute the code
+else
+	// execute the code
+fi
+
+as a new update we can now use double square bracket instead of one like, using [ -f "$1" ] we can use [[ -f "$1" ]] in if condition
+
+if we required atleast one argument while running the script we can check by using below
+if [[$# -eq 1 ]] -> this condition returns true if while running we provided only single argument
+command substitution -> user="$(who)" -> value of the who command will be stored in the user variable
+to find substring use -> if [[ "$1" == *"Linux"* ]]
+to check if string is empty -> if [[ -z "$mystring" ]] -> returns true if string length is 0
+to check if string is not empty -> if [[ -n "$mystring" ]] -> returns true if string length is greater 0
+we can use c style for loop in shell script also like, for ((i=0;i<10;i++))
+
+
+ 
 
 
